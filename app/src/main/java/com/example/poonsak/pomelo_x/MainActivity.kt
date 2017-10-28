@@ -1,5 +1,6 @@
 package com.example.poonsak.pomelo_x
 
+import android.app.Activity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -14,11 +15,18 @@ import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.provider.MediaStore
 import android.content.Intent
 import android.support.v4.app.ActivityCompat
+import android.graphics.Bitmap
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.widget.ImageView
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-
+    private var mRecyclerView: RecyclerView? = null
+    private var mAdapter: RecyclerView.Adapter<*>? = null
+    private var mLayoutManager: RecyclerView.LayoutManager? = null
+    val myDataset = arrayOf("Januarty", "Feb", "March")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +45,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        initInstances()
+    }
+
+    private fun initInstances() {
+        mRecyclerView = findViewById<RecyclerView>(R.id.recv_main)
+        mRecyclerView!!.setHasFixedSize(true)
+        mLayoutManager = LinearLayoutManager(this)
+        mRecyclerView!!.setLayoutManager(mLayoutManager)
+        val input = ArrayList<String>()
+        for (i in 0..99) {
+            input.add("Test" + i)
+        }// define an adapter
+        mAdapter = MyAdapter(input)
+        mRecyclerView!!.setAdapter(mAdapter)
     }
 
     override fun onBackPressed() {
@@ -85,6 +108,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+//            val extras = data.extras
+//            val imageBitmap = extras!!.get("data") as Bitmap
+//            val mImageView = findViewById<ImageView>(R.id.imgv_photo)
+//            mImageView.setImageBitmap(imageBitmap)
+//        }
+    }
+
+
     private fun dispatchTakePictureIntent() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
@@ -93,7 +126,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
-
         internal val REQUEST_IMAGE_CAPTURE = 1
     }
 
