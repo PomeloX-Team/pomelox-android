@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mLayoutManager = LinearLayoutManager(this)
         mRecyclerView!!.setLayoutManager(mLayoutManager)
         val input = ArrayList<String>()
-        for (i in 0..20) {
+        for (i in 0..2) {
             input.add("Test" + i)
         }// define an adapter
         mAdapter = MyAdapter(input)
