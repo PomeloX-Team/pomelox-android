@@ -46,11 +46,13 @@ package com.example.poonsak.pomelo_x
 import java.util.ArrayList
 
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 
 class MyAdapter// Provide a suitable constructor (depends on the kind of dataset)
 (private val values: MutableList<String>) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
@@ -94,13 +96,16 @@ class MyAdapter// Provide a suitable constructor (depends on the kind of dataset
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
+
+        Log.d("Location: ", "Location: " + position)
         val name = values[position]
         holder.txtHeader.setText(name)
-        holder.txtHeader.setOnClickListener(object : OnClickListener {
-            override fun onClick(v: View) {
-                remove(position)
-            }
-        })
+//        holder.txtHeader.setOnClickListener(object : OnClickListener {
+//            override fun onClick(v: View) {
+//                remove(position)
+//            }
+//        }
+//    )
 
         holder.txtFooter.setText("Footer: " + name)
     }

@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mLayoutManager = LinearLayoutManager(this)
         mRecyclerView!!.setLayoutManager(mLayoutManager)
         val input = ArrayList<String>()
-        for (i in 0..99) {
+        for (i in 0..20) {
             input.add("Test" + i)
         }// define an adapter
         mAdapter = MyAdapter(input)
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-
+//get thumbnail image
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
 //        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
 //            val extras = data.extras
