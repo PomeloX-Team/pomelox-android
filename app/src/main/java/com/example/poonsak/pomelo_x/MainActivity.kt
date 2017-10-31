@@ -16,9 +16,19 @@ import android.provider.MediaStore
 import android.content.Intent
 import android.support.v4.app.ActivityCompat
 import android.graphics.Bitmap
+import android.os.Build
+import android.os.Environment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.widget.ImageView
+import kotlinx.android.synthetic.main.content_main.*
+import android.os.Environment.DIRECTORY_PICTURES
+import android.support.v4.content.FileProvider
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -26,7 +36,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mRecyclerView: RecyclerView? = null
     private var mAdapter: RecyclerView.Adapter<*>? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
-    val myDataset = arrayOf("Januarty", "Feb", "March")
+    private var mCurrentPhotoPath: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show()
             dispatchTakePictureIntent()
+
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -108,25 +119,63 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 //get thumbnail image
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
 //            val extras = data.extras
 //            val imageBitmap = extras!!.get("data") as Bitmap
-//            val mImageView = findViewById<ImageView>(R.id.imgv_photo)
+//            val mImageView = findViewById<ImageView>(R.id.iv_test)
 //            mImageView.setImageBitmap(imageBitmap)
-//        }
+        }
     }
 
 
     private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (takePictureIntent.resolveActivity(packageManager) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        var takePictureIntent:Intent? = null
+        takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            var photoFile: File? = null
+            try {
+                photoFile = createImageFile()
+            } catch (ex: IOException) {
+            }
+
+            if (photoFile != null) {
+                var photoURI: android.net.Uri? = null
+
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    photoURI = android.net.Uri.fromFile(photoFile)
+                } else {
+                    photoURI = FileProvider.getUriForFile(this,
+                            "com.example.poonsak.pomelo_x", photoFile)
+                }
+
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+            }
         }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "_"
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val image = File.createTempFile(
+                imageFileName, /* prefix */
+                ".jpg", /* suffix */
+                storageDir      /* directory */
+        )
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath()
+        return image
     }
 
     companion object {
         internal val REQUEST_IMAGE_CAPTURE = 1
+        internal val REQUEST_TAKE_PHOTO = 1
     }
 
 }

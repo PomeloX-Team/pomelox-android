@@ -97,7 +97,6 @@ class MyAdapter// Provide a suitable constructor (depends on the kind of dataset
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        Log.d("Location: ", "Location: " + position)
         val name = values[position]
         holder.txtHeader.setText(name)
 //        holder.txtHeader.setOnClickListener(object : OnClickListener {
