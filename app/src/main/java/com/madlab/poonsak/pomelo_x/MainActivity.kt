@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.provider.MediaStore
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import android.os.Environment
 import android.support.v7.widget.LinearLayoutManager
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mAdapter: RecyclerView.Adapter<*>? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var mCurrentPhotoPath: String? = null
+    var fruitLogDbHelper = FruitLogDbHelper(this)
+    var fruitLogDb:SQLiteDatabase = fruitLogDbHelper.writableDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +63,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mLayoutManager = LinearLayoutManager(this)
         mRecyclerView!!.setLayoutManager(mLayoutManager)
         val input = ArrayList<String>()
-        for (i in 0..2) {
+        for (i in 0..20) {
             input.add("Test" + i)
         }// define an adapter
         mAdapter = MyAdapter(input)
