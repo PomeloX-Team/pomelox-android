@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.poonsak.pomelo_x">
+    package="com.madlab.poonsak.pomelo_x">
 
     <uses-feature android:name="android.hardware.camera"
         android:required="true" />
@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.poonsak.pomelo_x"
+            android:authorities="com.madlab.poonsak.pomelo_x"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

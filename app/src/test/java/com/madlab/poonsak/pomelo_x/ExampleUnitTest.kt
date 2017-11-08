@@ -1,4 +1,4 @@
-package com.example.poonsak.pomelo_x
+package com.madlab.poonsak.pomelo_x
 
 import org.junit.Test
 

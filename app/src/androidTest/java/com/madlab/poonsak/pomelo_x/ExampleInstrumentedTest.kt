@@ -1,4 +1,4 @@
-package com.example.poonsak.pomelo_x
+package com.madlab.poonsak.pomelo_x
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("com.example.poonsak.pomelo_x", appContext.packageName)
+        assertEquals("com.madlab.poonsak.pomelo_x", appContext.packageName)
     }
 }
