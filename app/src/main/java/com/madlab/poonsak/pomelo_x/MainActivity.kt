@@ -1,6 +1,7 @@
-package com.example.poonsak.pomelo_x
+package com.madlab.poonsak.pomelo_x
 
 import android.app.Activity
+import android.arch.persistence.room.Room
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -11,22 +12,16 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.provider.MediaStore
 import android.content.Intent
-import android.support.v4.app.ActivityCompat
-import android.graphics.Bitmap
 import android.os.Build
 import android.os.Environment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.widget.ImageView
-import kotlinx.android.synthetic.main.content_main.*
-import android.os.Environment.DIRECTORY_PICTURES
 import android.support.v4.content.FileProvider
 import java.io.File
 import java.io.IOException
+import java.security.AccessController.getContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,6 +35,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pomelogDb = Room.databaseBuilder(this, PomeloLogDb::class.java, "PomeloLog").build()
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
@@ -147,7 +143,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     photoURI = android.net.Uri.fromFile(photoFile)
                 } else {
                     photoURI = FileProvider.getUriForFile(this,
-                            "com.example.poonsak.pomelo_x", photoFile)
+                            "com.madlab.poonsak.pomelo_x", photoFile)
                 }
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
@@ -174,6 +170,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
+        lateinit var pomelogDb: PomeloLogDb
         internal val REQUEST_IMAGE_CAPTURE = 1
         internal val REQUEST_TAKE_PHOTO = 1
     }
