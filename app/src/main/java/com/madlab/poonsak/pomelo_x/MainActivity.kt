@@ -1,6 +1,7 @@
 package com.madlab.poonsak.pomelo_x
 
 import android.app.Activity
+import android.arch.persistence.room.Room
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pomelogDb = Room.databaseBuilder(this, PomeloLogDb::class.java, "PomeloLog").build()
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
@@ -168,6 +170,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
+        lateinit var pomelogDb: PomeloLogDb
         internal val REQUEST_IMAGE_CAPTURE = 1
         internal val REQUEST_TAKE_PHOTO = 1
     }
