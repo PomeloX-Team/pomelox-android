@@ -1,4 +1,4 @@
-package com.madlab.poonsak.pomelo_x;
+package com.madlab.poonsak.pomelo_x.persistence;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
@@ -17,10 +17,13 @@ public interface PomeloLogDao {
     List<PomeloLog> getAll();
 
     @Query("SELECT * FROM pomelolog WHERE uid IN (:uids)")
-    List<PomeloLog> loadAllByIds(int[] uids);
+    List<PomeloLog> loadAllByuIds(int[] uids);
+
+//    @Insert
+//    void insertAll(PomeloLog... pomeloLogs);
 
     @Insert
-    void insertAll(PomeloLog... pomeloLogs);
+    void insert(PomeloLog pomeloLog);
 
     @Delete
     void delete(PomeloLog pomeloLog);

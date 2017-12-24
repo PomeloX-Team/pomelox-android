@@ -1,9 +1,9 @@
 package com.madlab.poonsak.pomelo_x
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.persistence.room.Room
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -14,14 +14,18 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.provider.MediaStore
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v4.content.FileProvider
+import android.util.Log
+import com.madlab.poonsak.pomelo_x.persistence.PomeloLog
+import com.madlab.poonsak.pomelo_x.persistence.PomeloLogDb
 import java.io.File
 import java.io.IOException
-import java.security.AccessController.getContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,13 +40,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pomelogDb = Room.databaseBuilder(this, PomeloLogDb::class.java, "PomeloLog").build()
+
+        object : AsyncTask<Void, Void, PomeloLog>() {
+            override fun doInBackground(vararg params: Void?): PomeloLog {
+                val pomeloLog = PomeloLog()
+                pomeloLog.setCapture_date(Date().toString())
+//                pomeloLog.setRipe_date(Date().toString())
+                pomeloLog.setPath("nice")
+                pomelogDb.pomeloLogDao().insert(pomeloLog)
+                return pomeloLog
+            }
+
+            override fun onPostExecute(pomeloLog: PomeloLog) {
+                super.onPostExecute(pomeloLog)
+            }
+        }.execute()
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_SHORT)
-                    .setAction("Action", null).show()
             dispatchTakePictureIntent()
+//            Snackbar.make(view, "" + mCurrentPhotoPath, Snackbar.LENGTH_SHORT)
+//                    .setAction("Action", null).show()
+            Log.d("URI", "" + mCurrentPhotoPath)
 
         }
 
@@ -65,7 +86,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         for (i in 0..2) {
             input.add("Test" + i)
         }// define an adapter
-        mAdapter = MyAdapter(input)
+        mAdapter = RecyclerViewAdapter(input)
         mRecyclerView!!.setAdapter(mAdapter)
     }
 
@@ -114,7 +135,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-//get thumbnail image
+    //get thumbnail image
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
@@ -127,7 +148,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     private fun dispatchTakePictureIntent() {
-        var takePictureIntent:Intent? = null
+        val takePictureIntent: Intent?
         takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             var photoFile: File? = null
@@ -137,7 +158,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             if (photoFile != null) {
-                var photoURI: android.net.Uri? = null
+                val photoURI: android.net.Uri?
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                     photoURI = android.net.Uri.fromFile(photoFile)
@@ -152,6 +173,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name

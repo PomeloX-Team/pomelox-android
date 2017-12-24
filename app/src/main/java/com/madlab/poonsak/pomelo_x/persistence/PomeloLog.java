@@ -1,6 +1,5 @@
-package com.madlab.poonsak.pomelo_x;
+package com.madlab.poonsak.pomelo_x.persistence;
 
-import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
@@ -13,14 +12,8 @@ import android.arch.persistence.room.PrimaryKey;
 public class PomeloLog {
     @PrimaryKey(autoGenerate = true)
     private int uid;
-
-    @ColumnInfo
     private String capture_date;
-
-    @ColumnInfo
-    private String ripe_date;
-
-    @ColumnInfo
+//    private String ripe_date;
     private String path;
 
     public int getUid() {
@@ -31,21 +24,22 @@ public class PomeloLog {
         this.uid = uid;
     }
 
-    public String getRipe_date() {
-        return ripe_date;
-    }
-
-    public void setRipe_date(String date) {
-        ripe_date = date;
-    }
-
     public String getCapture_date() {
         return capture_date;
     }
 
-    public void setCapture_date(String date) {
-        capture_date = date;
+    public void setCapture_date(String capture_date) {
+        this.capture_date = capture_date;
     }
+
+//    public String getRipeDate() {
+//        return this.ripe_date;
+//    }
+//
+//    public void setRipe_date(String ripe_date) {
+//        this.ripe_date = ripe_date;
+//    }
+
 
     public String getPath() {
         return path;

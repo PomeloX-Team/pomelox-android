@@ -1,6 +1,5 @@
-package com.madlab.poonsak.pomelo_x;
+package com.madlab.poonsak.pomelo_x.persistence;
 
-import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
