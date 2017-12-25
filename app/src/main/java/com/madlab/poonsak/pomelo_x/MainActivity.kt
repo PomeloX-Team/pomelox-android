@@ -14,6 +14,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.provider.MediaStore
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
@@ -22,6 +26,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v4.content.FileProvider
 import android.util.Log
+import android.widget.ImageView
 import com.madlab.poonsak.pomelo_x.persistence.PomeloLog
 import com.madlab.poonsak.pomelo_x.persistence.PomeloLogDb
 import java.io.File
@@ -36,6 +41,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mAdapter: RecyclerView.Adapter<*>? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var mCurrentPhotoPath: String? = null
+
+    var mImageView: ImageView ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +85,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun initInstances() {
+        mImageView = findViewById<ImageView>(R.id.iv_test)
         mRecyclerView = findViewById<RecyclerView>(R.id.recv_main)
         mRecyclerView!!.setHasFixedSize(true)
         mLayoutManager = LinearLayoutManager(this)
@@ -114,6 +122,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
@@ -139,13 +148,61 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-//            val extras = data.extras
+//            val extras = data?.extras
 //            val imageBitmap = extras!!.get("data") as Bitmap
-//            val mImageView = findViewById<ImageView>(R.id.iv_test)
-//            mImageView.setImageBitmap(imageBitmap)
+
+//            mImageView?.setImageBitmap(imageBitmap)
+
+            setPic()
         }
     }
 
+    private fun setPic() {
+        var targetW = mImageView!!.width
+        var targetH = mImageView!!.height
+
+        var bmOptions = BitmapFactory.Options()
+        bmOptions.inJustDecodeBounds = true
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions)
+        var photoW = bmOptions.outWidth
+        var photoH = bmOptions.outHeight
+
+        var scaleFactor = Math.min(photoW/targetW, photoH/targetH)
+
+        bmOptions.inJustDecodeBounds = false
+        bmOptions.inSampleSize = scaleFactor
+        bmOptions.inPurgeable =true
+
+        var bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions)
+        var exif:ExifInterface ?= null
+        try {
+            var photoFile =  File(mCurrentPhotoPath)
+            exif = ExifInterface(photoFile.absolutePath)
+        } catch (ex: IOException) {
+        }
+
+        var orientation = ExifInterface.ORIENTATION_NORMAL
+        if (exif != null) {
+            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+        }
+
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> bitmap = rotateBitmap(bitmap, 90)
+            ExifInterface.ORIENTATION_ROTATE_180 -> bitmap = rotateBitmap(bitmap, 180)
+            ExifInterface.ORIENTATION_ROTATE_270 -> bitmap = rotateBitmap(bitmap, 270)
+        }
+
+        mImageView!!.setImageBitmap(bitmap)
+
+    }
+
+
+    fun rotateBitmap(bitmap: Bitmap, degrees:Int): Bitmap? {
+        var matrix = Matrix()
+        matrix.postRotate(degrees.toFloat())
+        return Bitmap.createBitmap(bitmap, 0,0, bitmap.width, bitmap.height,
+                matrix, true)
+    }
 
     private fun dispatchTakePictureIntent() {
         val takePictureIntent: Intent?
