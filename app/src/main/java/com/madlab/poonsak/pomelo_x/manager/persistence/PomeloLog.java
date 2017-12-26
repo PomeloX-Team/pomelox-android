@@ -1,5 +1,6 @@
-package com.madlab.poonsak.pomelo_x.persistence;
+package com.madlab.poonsak.pomelo_x.manager.persistence;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
@@ -12,8 +13,12 @@ import android.arch.persistence.room.PrimaryKey;
 public class PomeloLog {
     @PrimaryKey(autoGenerate = true)
     private int uid;
+
+    @ColumnInfo(name = "capture_date")
     private String capture_date;
 //    private String ripe_date;
+
+    @ColumnInfo(name = "path")
     private String path;
 
     public int getUid() {

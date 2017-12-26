@@ -1,10 +1,11 @@
-package com.madlab.poonsak.pomelo_x
+package com.madlab.poonsak.pomelo_x.view
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.madlab.poonsak.pomelo_x.R
 
 class RecyclerViewAdapter// Provide a suitable constructor (depends on the kind of dataset)
 (private val values: MutableList<String>) : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
@@ -35,7 +36,7 @@ class RecyclerViewAdapter// Provide a suitable constructor (depends on the kind 
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): RecyclerViewAdapter.ViewHolder {
+                                    viewType: Int): ViewHolder {
         // create a new view
         val inflater = LayoutInflater.from(
                 parent.getContext())

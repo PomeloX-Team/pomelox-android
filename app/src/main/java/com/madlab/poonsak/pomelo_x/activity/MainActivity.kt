@@ -1,4 +1,4 @@
-package com.madlab.poonsak.pomelo_x
+package com.madlab.poonsak.pomelo_x.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -21,14 +21,15 @@ import android.media.ExifInterface
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
-import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v4.content.FileProvider
 import android.util.Log
 import android.widget.ImageView
-import com.madlab.poonsak.pomelo_x.persistence.PomeloLog
-import com.madlab.poonsak.pomelo_x.persistence.PomeloLogDb
+import com.madlab.poonsak.pomelo_x.R
+import com.madlab.poonsak.pomelo_x.manager.persistence.PomeloLog
+import com.madlab.poonsak.pomelo_x.view.RecyclerViewAdapter
+import com.madlab.poonsak.pomelo_x.manager.persistence.PomeloLogDb
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -42,26 +43,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var mCurrentPhotoPath: String? = null
 
-    var mImageView: ImageView ?= null
+    var mImageView: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pomelogDb = Room.databaseBuilder(this, PomeloLogDb::class.java, "PomeloLog").build()
 
-        object : AsyncTask<Void, Void, PomeloLog>() {
-            override fun doInBackground(vararg params: Void?): PomeloLog {
-                val pomeloLog = PomeloLog()
-                pomeloLog.setCapture_date(Date().toString())
-//                pomeloLog.setRipe_date(Date().toString())
-                pomeloLog.setPath("nice")
-                pomelogDb.pomeloLogDao().insert(pomeloLog)
-                return pomeloLog
-            }
 
-            override fun onPostExecute(pomeloLog: PomeloLog) {
-                super.onPostExecute(pomeloLog)
-            }
-        }.execute()
+
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
@@ -71,7 +60,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            Snackbar.make(view, "" + mCurrentPhotoPath, Snackbar.LENGTH_SHORT)
 //                    .setAction("Action", null).show()
             Log.d("URI", "" + mCurrentPhotoPath)
-
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -146,7 +134,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     //get thumbnail image
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
 //            val extras = data?.extras
 //            val imageBitmap = extras!!.get("data") as Bitmap
@@ -154,8 +141,40 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            mImageView?.setImageBitmap(imageBitmap)
 
             setPic()
+//            PomeloLogDbAsync(PomeloLogDb.getPomeloLogDb(this)).execute(mCurrentPhotoPath)
+//            var logList = pomelogDb.pomeloLogDao().all
+//            Log.d("size", "" + logList.size)
         }
     }
+
+    private class PomeloLogDbAsync internal constructor(private val mDb: PomeloLogDb) : AsyncTask<String, Void, Void>() {
+
+//        fun PomelogLogDbAsync(photoPath:String){
+//        }
+
+        override fun doInBackground(vararg params: String): Void? {
+            var pomeloLog = PomeloLog()
+            pomeloLog.setCapture_date(Date().toString())
+            pomeloLog.setPath(params[0])
+            pomelogDb.pomeloLogDao().insert(pomeloLog)
+            return null
+        }
+    }
+
+//    object : AsyncTask<Void, Void, PomeloLog>() {
+//        override fun doInBackground(vararg params: Void?): PomeloLog {
+//            val pomeloLog = PomeloLog()
+//            pomeloLog.setCapture_date(Date().toString())
+////                pomeloLog.setRipe_date(Date().toString())
+//            pomeloLog.setPath("nice")
+//            pomelogDb.pomeloLogDao().insert(pomeloLog)
+//            return pomeloLog
+//        }
+//
+////            override fun onPostExecute(pomeloLog: PomeloLog) {
+////                super.onPostExecute(pomeloLog)
+////            }
+//    }.execute()
 
     private fun setPic() {
         var targetW = mImageView!!.width
@@ -167,16 +186,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var photoW = bmOptions.outWidth
         var photoH = bmOptions.outHeight
 
-        var scaleFactor = Math.min(photoW/targetW, photoH/targetH)
+        var scaleFactor = Math.min(photoW / targetW, photoH / targetH)
 
         bmOptions.inJustDecodeBounds = false
         bmOptions.inSampleSize = scaleFactor
-        bmOptions.inPurgeable =true
+//        bmOptions.inPurgeable =true
 
         var bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions)
-        var exif:ExifInterface ?= null
+        var exif: ExifInterface? = null
         try {
-            var photoFile =  File(mCurrentPhotoPath)
+            val photoFile = File(mCurrentPhotoPath)
             exif = ExifInterface(photoFile.absolutePath)
         } catch (ex: IOException) {
         }
@@ -197,10 +216,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    fun rotateBitmap(bitmap: Bitmap, degrees:Int): Bitmap? {
+    fun rotateBitmap(bitmap: Bitmap, degrees: Int): Bitmap? {
         var matrix = Matrix()
         matrix.postRotate(degrees.toFloat())
-        return Bitmap.createBitmap(bitmap, 0,0, bitmap.width, bitmap.height,
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height,
                 matrix, true)
     }
 
